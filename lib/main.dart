@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     final ThemeData theme = ThemeData();
 
     return ChangeNotifierProvider(
-      create: (context) => ProductsProvider(),
+      create: (_) => ProductsProvider(),
       child: MaterialApp(
         title: 'MyShop',
         theme: ThemeData(
