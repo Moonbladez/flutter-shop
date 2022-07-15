@@ -57,6 +57,17 @@ class ProductsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateProduct(String id, Product newProduct) {
+    final productIndex = _items.indexWhere((product) => product.id == id);
+
+    if (productIndex >= 0) {
+      _items[productIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print("error");
+    }
+  }
+
   List<Product> get favouriteItems {
     return _items.where((item) => item.isFavourite).toList();
   }
