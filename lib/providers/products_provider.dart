@@ -45,21 +45,20 @@ class ProductsProvider with ChangeNotifier {
     return [..._items];
   }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     final url = Uri.https(
         "flutter-shop-af56d-default-rtdb.europe-west1.firebasedatabase.app",
         "/products.json");
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            "description": product.description,
+            "imageUrl": product.imageUrl,
+            "isFavourite": product.isFavourite,
+            "price": product.price,
+            "title": product.title,
+          }));
 
-    return http
-        .post(url,
-            body: json.encode({
-              "description": product.description,
-              "imageUrl": product.imageUrl,
-              "isFavourite": product.isFavourite,
-              "price": product.price,
-              "title": product.title,
-            }))
-        .then((response) {
       final newProduct = Product(
           description: product.description,
           id: json.decode(response.body)["name"],
@@ -69,9 +68,10 @@ class ProductsProvider with ChangeNotifier {
 
       _items.insert(0, newProduct);
       notifyListeners();
-    }).catchError((error) {
-      throw (error);
-    });
+      ;
+    } catch (error) {
+      throw error;
+    }
   }
 
   void updateProduct(String id, Product newProduct) {
