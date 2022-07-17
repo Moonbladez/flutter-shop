@@ -15,11 +15,12 @@ class _EditProductScreen extends State<EditProductScreen> {
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
-  bool _isInit = true;
+  var _isInit = true;
   bool _isLoading = false;
 
   var _editedProduct =
       Product(description: "", id: null, imageUrl: "", price: 0, title: "");
+
   var _initValues = {
     "title": "",
     "description": "",
@@ -79,7 +80,7 @@ class _EditProductScreen extends State<EditProductScreen> {
     });
     //edit product
     if (_editedProduct.id != null) {
-      Provider.of<ProductsProvider>(context, listen: false)
+      await Provider.of<ProductsProvider>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
       setState(() {
         _isLoading = false;
@@ -101,13 +102,13 @@ class _EditProductScreen extends State<EditProductScreen> {
                   title: Text("An error occured"),
                   content: Text("Something has gone wrong"),
                 ));
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
       }
     }
+    setState(() {
+      _isLoading = false;
+    });
+
+    Navigator.of(context).pop();
   }
 
   @override
