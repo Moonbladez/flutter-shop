@@ -3,7 +3,9 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 
-import 'product.dart';
+import "./../models/http_exception.dart";
+
+import "./product.dart";
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
@@ -87,9 +89,25 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url = Uri.https(
+        "flutter-shop-af56d-default-rtdb.europe-west1.firebasedatabase.app",
+        "/products/${id}.json");
+    final exsistingProductIndex =
+        _items.indexWhere((product) => product.id == id);
+    var exsistingProduct = _items[exsistingProductIndex];
+    _items.removeAt(exsistingProductIndex);
     notifyListeners();
+    final response = await http.delete(url);
+    _items.removeAt(exsistingProductIndex);
+
+    notifyListeners();
+    if (response.statusCode >= 400) {
+      _items.insert(exsistingProductIndex, exsistingProduct);
+      notifyListeners();
+      throw HttpException(message: "Could not delete product");
+    }
+    exsistingProduct = null;
   }
 
   List<Product> get favouriteItems {
