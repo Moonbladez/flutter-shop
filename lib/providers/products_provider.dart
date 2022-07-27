@@ -24,6 +24,7 @@ class ProductsProvider with ChangeNotifier {
     try {
       final response = await http.post(url,
           body: json.encode({
+            "creatorId": userId,
             "description": product.description,
             "imageUrl": product.imageUrl,
             "price": product.price,
@@ -44,9 +45,11 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : "";
     var url = Uri.parse(
-        "https://flutter-shop-af56d-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=${authToken}");
+        'https://flutter-shop-af56d-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=${authToken}&$filterString');
     try {
       final response = await http.get(url);
       final data = json.decode(response.body) as Map<String, dynamic>;
