@@ -47,7 +47,17 @@ class MyApp extends StatelessWidget {
                     primary: Colors.blueGrey[900],
                     secondary: Colors.cyanAccent[700]),
                 fontFamily: "Lato"),
-            home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            home: auth.isAuth
+                ? ProductsOverviewScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (context, snapshot) =>
+                        snapshot.connectionState == ConnectionState.waiting
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : AuthScreen(),
+                  ),
             routes: {
               Cartscreen.routeName: ((context) => Cartscreen()),
               EditProductScreen.routeName: ((context) => EditProductScreen()),
